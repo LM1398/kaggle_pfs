@@ -27,7 +27,6 @@ def item_cat_preparation(df: pd.DataFrame) -> pd.DataFrame:
 def create_full_items(
     items: pd.DataFrame = items, item_cat: pd.DataFrame = item_cat
 ) -> pd.DataFrame:
-
     """Merging item_cat and items to get a df with item id, item_category_id, and big_category.
 
     Args:
