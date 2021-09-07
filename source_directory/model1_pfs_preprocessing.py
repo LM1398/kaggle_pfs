@@ -58,7 +58,7 @@ def shops_preparation(df: pd.DataFrame) -> pd.DataFrame:
     city = [x.split(" ")[0] for x in df["shop_name"]]
     df["city"] = city
     df.loc[df["city"] == "!Якутск", "city"] = "Якутск"
-    df.drop(columns='shop_name',inplace=True)
+    df.drop(columns="shop_name", inplace=True)
     return df
 
 
@@ -137,9 +137,7 @@ def main():
     # Merging
 
     full_train = pd.merge(train, full_items, on="item_id", how="left")
-    full_train = pd.merge(
-        full_train, shops, on="shop_id", how="left"
-    )
+    full_train = pd.merge(full_train, shops, on="shop_id", how="left")
 
     # Creating X_train, y_train, and X_test
 
