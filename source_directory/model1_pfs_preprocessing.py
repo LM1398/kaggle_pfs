@@ -82,9 +82,49 @@ def train_preparation(df: pd.DataFrame) -> pd.DataFrame:
     data.reset_index(inplace=True)
     data.rename(columns=({"item_cnt_day": "item_cnt_month"}), inplace=True)
     df = pd.merge(df, data, on=["shop_id", "item_id"], how="left")
-    df.columns = (
-        ["date_block_num", "shop_id", "item_id", "item_category_id", "big_category", "city"]
-        + ["_".join(["item_cnt_month", str(block) for block in range(len(34))])])
+    names = {
+        "date_block_num": "date_block_num",
+        "shop_id": "shop_id",
+        "item_id": "item_id",
+        "item_category_id": "item_category_id",
+        "big_category": "big_category",
+        "city": "city",
+        ("item_cnt_month", 0): "item_cnt_month_0",
+        ("item_cnt_month", 1): "item_cnt_month_1",
+        ("item_cnt_month", 2): "item_cnt_month_2",
+        ("item_cnt_month", 3): "item_cnt_month_3",
+        ("item_cnt_month", 4): "item_cnt_month_4",
+        ("item_cnt_month", 5): "item_cnt_month_5",
+        ("item_cnt_month", 6): "item_cnt_month_6",
+        ("item_cnt_month", 7): "item_cnt_month_7",
+        ("item_cnt_month", 8): "item_cnt_month_8",
+        ("item_cnt_month", 9): "item_cnt_month_9",
+        ("item_cnt_month", 10): "item_cnt_month_10",
+        ("item_cnt_month", 11): "item_cnt_month_11",
+        ("item_cnt_month", 12): "item_cnt_month_12",
+        ("item_cnt_month", 13): "item_cnt_month_13",
+        ("item_cnt_month", 14): "item_cnt_month_14",
+        ("item_cnt_month", 15): "item_cnt_month_15",
+        ("item_cnt_month", 16): "item_cnt_month_16",
+        ("item_cnt_month", 17): "item_cnt_month_17",
+        ("item_cnt_month", 18): "item_cnt_month_18",
+        ("item_cnt_month", 19): "item_cnt_month_19",
+        ("item_cnt_month", 20): "item_cnt_month_20",
+        ("item_cnt_month", 21): "item_cnt_month_21",
+        ("item_cnt_month", 22): "item_cnt_month_22",
+        ("item_cnt_month", 23): "item_cnt_month_23",
+        ("item_cnt_month", 24): "item_cnt_month_24",
+        ("item_cnt_month", 25): "item_cnt_month_25",
+        ("item_cnt_month", 26): "item_cnt_month_26",
+        ("item_cnt_month", 27): "item_cnt_month_27",
+        ("item_cnt_month", 28): "item_cnt_month_28",
+        ("item_cnt_month", 29): "item_cnt_month_29",
+        ("item_cnt_month", 30): "item_cnt_month_30",
+        ("item_cnt_month", 31): "item_cnt_month_31",
+        ("item_cnt_month", 32): "item_cnt_month_32",
+        ("item_cnt_month", 33): "item_cnt_month_33",
+    }
+    df.rename(columns=names, inplace=True)
     return df
 
 
