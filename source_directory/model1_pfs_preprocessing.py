@@ -15,7 +15,10 @@ def item_cat_preparation(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: item_category with addition of big_category feature translated into English.
     """
-    trans = json.load("~/samurai/pfs/data_directory/input/big_category_rus_eng.json")
+    with open(
+        "/Users/leo/samurai/pfs/data/input/big_category_rus_eng.json"
+    ) as json_file:
+        trans = json.load(json_file)
     df["big_category"] = [x.split("-")[0].strip() for x in df.item_category_name]
     df["big_category"].replace(to_replace=trans, inplace=True)
     return df
