@@ -1,4 +1,4 @@
-"""Full model using lightgbm as estimator.
+"""Full model using lightgbm as estimator. Score was 1.8625
 """
 
 import json
