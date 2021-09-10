@@ -3,9 +3,10 @@ link to reference = https://www.kaggle.com/vanshjatana/applied-machine-learning/
 """
 
 import json
+
+import lightgbm as lgb
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
-import lightgbm as lgb
 
 
 def item_cat_preparation(df: pd.DataFrame) -> pd.DataFrame:
@@ -210,5 +211,7 @@ def main():
     submission.drop(columns=["item_id", "shop_id"], inplace=True)
     submission.to_csv("submission.csv", index=False)
 
-    if __name__ == "__main__":
-        main()
+
+if __name__ == "__main__":
+    main()
+
