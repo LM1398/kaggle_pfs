@@ -84,8 +84,8 @@ def encoding_features(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: train with encoded features.
     """
 
-    df["big_category"] = LabelEncoder().fit_transform(df, df["big_category"])
-    df["city"] = LabelEncoder().fit_transform(df, df["city"])
+    df["big_category"] = LabelEncoder().fit_transform(df["big_category"])
+    df["city"] = LabelEncoder().fit_transform(df["city"])
     return df
 
 
