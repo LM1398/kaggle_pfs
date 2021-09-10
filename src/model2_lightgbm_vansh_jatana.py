@@ -16,9 +16,7 @@ def item_cat_preparation(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: item_category with addition of big_category feature translated into English.
     """
-    with open(
-        "/Users/leo/samurai/pfs/data/input/big_category_rus_eng.json"
-    ) as json_file:
+    with open("../data/input/big_category_rus_eng.json") as json_file:
         trans = json.load(json_file)
     df["big_category"] = [x.split("-")[0].strip() for x in df.item_category_name]
     df["big_category"].replace(to_replace=trans, inplace=True)
@@ -107,11 +105,11 @@ def main():
 
     # Import csv files
 
-    item_cat = pd.read_csv("/Users/leo/samurai/kaggle/pfs/data/item_categories.csv")
-    items = pd.read_csv("/Users/leo/samurai/kaggle/pfs/data/items.csv")
-    train = pd.read_csv("/Users/leo/samurai/kaggle/pfs/data/sales_train.csv")
-    shops = pd.read_csv("/Users/leo/samurai/kaggle/pfs/data/shops.csv")
-    test = pd.read_csv("/Users/leo/samurai/kaggle/pfs/data/test.csv")
+    item_cat = pd.read_csv("../data/raw/item_categories.csv")
+    items = pd.read_csv("../data/raw/items.csv")
+    train = pd.read_csv("../data/raw/sales_train.csv")
+    shops = pd.read_csv("../data/raw/shops.csv")
+    test = pd.read_csv("../data/raw/test.csv")
 
     # Preparing features
 
@@ -209,7 +207,7 @@ def main():
         how="left",
     ).fillna(0)
     submission.drop(columns=["item_id", "shop_id"], inplace=True)
-    submission.to_csv("submission.csv", index=False)
+    submission.to_csv("../data/output/submission.csv", index=False)
 
 
 if __name__ == "__main__":
