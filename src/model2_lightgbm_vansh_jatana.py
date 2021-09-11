@@ -3,9 +3,10 @@ link to reference = https://www.kaggle.com/vanshjatana/applied-machine-learning/
 """
 
 import json
+
+import lightgbm as lgb
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
-import lightgbm as lgb
 
 
 def item_cat_preparation(df: pd.DataFrame) -> pd.DataFrame:
@@ -15,9 +16,7 @@ def item_cat_preparation(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: item_category with addition of big_category feature translated into English.
     """
-    with open(
-        "/Users/leo/samurai/pfs/data/input/big_category_rus_eng.json"
-    ) as json_file:
+    with open("../data/input/big_category_rus_eng.json") as json_file:
         trans = json.load(json_file)
     df["big_category"] = [x.split("-")[0].strip() for x in df.item_category_name]
     df["big_category"].replace(to_replace=trans, inplace=True)
@@ -32,12 +31,12 @@ def create_full_items(items: pd.DataFrame, item_cat: pd.DataFrame) -> pd.DataFra
         pd.DataFrame: Returns full_items.
     """
 
-    full_items = pd.merge(
+    df = pd.merge(
         items.drop(columns="item_name"),
         item_cat.drop(columns="item_category_name"),
         on="item_category_id",
     )
-    return full_items
+    return df
 
 
 def shops_preparation(df: pd.DataFrame) -> pd.DataFrame:
@@ -56,7 +55,7 @@ def shops_preparation(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def train_preparation(df: pd.DataFrame) -> pd.DataFrame:
+def data_df(df: pd.DataFrame) -> pd.DataFrame:
     """Uses pivot_table to add item_cnt per date_block_num as a feature (for all 33 weeks).
     Also fixes the names "('item_cnt_day'), x" because it return an error when using it for models.
     Args:
@@ -65,27 +64,15 @@ def train_preparation(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: full_train.
     """
 
-    data = df.pivot_table(
+    data = pd.pivot_table(
+        data=df,
         index=["shop_id", "item_id"],
         values=["item_cnt_day"],
         columns="date_block_num",
         aggfunc="sum",
     ).fillna(0)
     data.reset_index(inplace=True)
-    df = pd.merge(df, data, on=["shop_id", "item_id"], how="left")
-    column_names = [
-        "date",
-        "date_block_num",
-        "shop_id",
-        "item_id",
-        "item_price",
-        "item_cnt_day",
-        "item_category_id",
-        "big_category",
-        "city",
-    ] + ["item_cnt_month_" + str(x) for x in range(0, 34)]
-    df.columns = column_names
-    return df
+    return data
 
 
 def encoding_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -96,8 +83,8 @@ def encoding_features(df: pd.DataFrame) -> pd.DataFrame:
         pd.DataFrame: train with encoded features.
     """
 
-    df["big_category"] = LabelEncoder().fit_transform(df, df["big_category"])
-    df["city"] = LabelEncoder().fit_transform(df, df["city"])
+    df["big_category"] = LabelEncoder().fit_transform(df["big_category"])
+    df["city"] = LabelEncoder().fit_transform(df["city"])
     return df
 
 
@@ -118,23 +105,33 @@ def main():
 
     # Import csv files
 
-    item_cat = pd.read_csv("/Users/leo/samurai/kaggle/pfs/data/item_categories.csv")
-    items = pd.read_csv("/Users/leo/samurai/kaggle/pfs/data/items.csv")
-    train = pd.read_csv("/Users/leo/samurai/kaggle/pfs/data/sales_train.csv")
-    shops = pd.read_csv("/Users/leo/samurai/kaggle/pfs/data/shops.csv")
-    test = pd.read_csv("/Users/leo/samurai/kaggle/pfs/data/test.csv")
+    item_cat = pd.read_csv("../data/raw/item_categories.csv")
+    items = pd.read_csv("../data/raw/items.csv")
+    train = pd.read_csv("../data/raw/sales_train.csv")
+    shops = pd.read_csv("../data/raw/shops.csv")
+    test = pd.read_csv("../data/raw/test.csv")
 
     # Preparing features
 
     item_cat = item_cat_preparation(item_cat)
     full_items = create_full_items(items, item_cat)
     shops = shops_preparation(shops)
-    train = train_preparation(train)
-
-    # Merging
-
     full_train = pd.merge(train, full_items, on="item_id", how="left")
     full_train = pd.merge(full_train, shops, on="shop_id", how="left")
+    data = data_df(train)
+    full_train = pd.merge(full_train, data, on=["shop_id", "item_id"], how="left")
+    column_names = [
+        "date",
+        "date_block_num",
+        "shop_id",
+        "item_id",
+        "item_price",
+        "item_cnt_day",
+        "item_category_id",
+        "big_category",
+        "city",
+    ] + ["item_cnt_month_" + str(x) for x in range(0, 34)]
+    full_train.columns = column_names
 
     # Dropping duplicates
 
@@ -210,7 +207,9 @@ def main():
         how="left",
     ).fillna(0)
     submission.drop(columns=["item_id", "shop_id"], inplace=True)
-    submission.to_csv("submission.csv", index=False)
+    submission.to_csv("../data/output/submission.csv", index=False)
 
-    if __name__ == "__main__":
-        main()
+
+if __name__ == "__main__":
+    main()
+
